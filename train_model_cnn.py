@@ -69,7 +69,7 @@ regressor.add(Dropout(0.2))
 
 print("Download Weights")
 regressor = Sequential()
-regressor.load_weights("weights00000020.h5")
+# regressor.load_weights("weights00000020.h5")
 
 regressor.add(Conv1D(nb_filter=512, filter_length=16, input_shape=input_shape, activation="relu"))
 regressor.add(MaxPooling1D(pool_size=8))
