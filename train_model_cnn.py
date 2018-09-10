@@ -8,6 +8,7 @@ Created on Sun Sep  9 11:14:13 2018
 import numpy as np 
 import pandas as pd 
 from sklearn.preprocessing import MinMaxScaler
+from keras.models import model_from_json
 
 print("Open CSV File ... ")
 dataset = pd.read_csv("XAUUSD_1M_selected.csv")
@@ -65,7 +66,10 @@ regressor.add(Dropout(0.2))
 regressor.add(LSTM(units = 64))
 regressor.add(Dropout(0.2))
 """
+
+print("Download Weights")
 regressor = Sequential()
+regressor.load_weights("weights00000020.h5")
 
 regressor.add(Conv1D(nb_filter=512, filter_length=16, input_shape=input_shape, activation="relu"))
 regressor.add(MaxPooling1D(pool_size=8))
@@ -85,11 +89,11 @@ regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 mcp = ModelCheckpoint('weights{epoch:08d}.h5', save_weights_only=True, period=5)
 tb = TensorBoard('logs')
-es = EarlyStopping(monitor='val_loss', min_delta=1e-10, patience=10, verbose=1)
+#es = EarlyStopping(monitor='val_loss', min_delta=1e-10, patience=10, verbose=1)
 rlr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
 
 regressor.fit(input_data, output_data, epochs = 300, shuffle=True,
-              callbacks=[es, rlr,mcp, tb], validation_split=0.2, verbose=1, batch_size=64)
+              callbacks=[rlr,mcp, tb], validation_split=0.2, verbose=1, batch_size=64)
 
 model_json = regressor.to_json()
 with open('last_model.json', 'w') as json_file:
